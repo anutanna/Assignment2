@@ -2,16 +2,23 @@
 import { useState, useEffect } from "react";
 
 export default function ProductManagement() {
+  interface Business {
+    id: string;
+    name: string;
+  }
 
-    interface Business {
-  id: string;
-  name: string;
-}
+  interface Brand {
+    id: string;
+    name: string;
+  }
 
-interface Brand {
-  id: string;
-  name: string;
-}
+  interface Product {
+    id: string;
+    name: string;
+    price: number; // ✅ keep price as number
+    description?: string;
+    stock: number;
+  }
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -19,40 +26,31 @@ interface Brand {
   const [message, setMessage] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  
+
   const [selectedBusiness, setSelectedBusiness] = useState("");
-const [selectedBrand, setSelectedBrand] = useState("");
-const [businesses, setBusinesses] = useState<Business[]>([]);
-const [brands, setBrands] = useState<Brand[]>([]);
-const [stock, setStock] = useState(0);
-interface Product {
-    id: string;
-    name: string;
-    price: number;
-    description?: string;
-    stock: number;
-  }
-
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [stock, setStock] = useState(0);
 
   
-useEffect(() => {
+  useEffect(() => {
     fetchProducts();
     fetchBusinesses();
     fetchBrands();
   }, []);
-  
- const fetchBusinesses = async () => {
-  const res = await fetch("/api/businesses");
-  const data = await res.json();
-  setBusinesses(data as Business[]);
-};
 
-const fetchBrands = async () => {
-  const res = await fetch("/api/brands");
-  const data = await res.json();
-  setBrands(data as Brand[]);
-};
+  const fetchBusinesses = async () => {
+    const res = await fetch("/api/businesses");
+    const data = await res.json();
+    setBusinesses(data as Business[]);
+  };
 
+  const fetchBrands = async () => {
+    const res = await fetch("/api/brands");
+    const data = await res.json();
+    setBrands(data as Brand[]);
+  };
 
   const fetchProducts = async () => {
     const res = await fetch("/api/products");
@@ -60,22 +58,21 @@ const fetchBrands = async () => {
     setProducts(data as Product[]);
   };
 
-
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          price: parseFloat(price),
-          description,
-          stock, 
-          businessId: selectedBusiness,
-          brandId: selectedBrand,
-        }),
-      });
-      
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        price: parseFloat(price),
+        description,
+        stock,
+        businessId: selectedBusiness,
+        brandId: selectedBrand,
+      }),
+    });
+
     const data = await res.json();
     if (res.ok) {
       setMessage("Product added!");
@@ -110,7 +107,7 @@ const fetchBrands = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: editingProduct.name,
-        price: parseFloat(editingProduct.price),
+        price: editingProduct.price, // ✅ no parseFloat needed, already number
         description: editingProduct.description,
       }),
     });
@@ -128,117 +125,126 @@ const fetchBrands = async () => {
       <h1 className="text-2xl font-bold mb-4">Product Management</h1>
 
       {/* Add Product Form */}
-<form onSubmit={handleAdd} className="mb-6 space-y-2">
-  <label htmlFor="productName" className="sr-only">Product Name</label>
-  <input
-    id="productName"
-    type="text"
-    placeholder="Product Name"
-    className="input input-bordered w-full"
-    value={name}
-    onChange={(e) => setName(e.target.value)}
-    required
-  />
+      <form onSubmit={handleAdd} className="mb-6 space-y-2">
+        <input
+          type="text"
+          placeholder="Product Name"
+          className="input input-bordered w-full"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
 
-  <label htmlFor="productPrice" className="sr-only">Product Price</label>
-  <input
-    id="productPrice"
-    type="number"
-    placeholder="Price"
-    className="input input-bordered w-full"
-    value={price}
-    onChange={(e) => setPrice(e.target.value)}
-    required
-  />
+        <input
+          type="number"
+          placeholder="Price"
+          className="input input-bordered w-full"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
 
-  <label htmlFor="productDescription" className="sr-only">Product Description</label>
-  <textarea
-    id="productDescription"
-    placeholder="Description"
-    className="textarea textarea-bordered w-full"
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-  />
+        <textarea
+          placeholder="Description"
+          className="textarea textarea-bordered w-full"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-  <label htmlFor="productStock" className="sr-only">Stock quantity</label>
-  <input
-    id="productStock"
-    type="number"
-    placeholder="Stock quantity"
-    className="input input-bordered w-full"
-    value={stock}
-    onChange={(e) => setStock(Number(e.target.value))}
-    required
-  />
+        <input
+          type="number"
+          placeholder="Stock quantity"
+          className="input input-bordered w-full"
+          value={stock}
+          onChange={(e) => setStock(Number(e.target.value))}
+          required
+        />
 
-  <label htmlFor="businessSelect" className="sr-only">Select Business</label>
-  <select
-    id="businessSelect"
-    required
-    value={selectedBusiness}
-    onChange={(e) => setSelectedBusiness(e.target.value)}
-    className="select select-bordered w-full"
-  >
-    <option value="">Select Business</option>
-    {businesses.map((b) => (
-      <option key={b.id} value={b.id}>{b.name}</option>
-    ))}
-  </select>
+       <label htmlFor="businessSelect" className="sr-only">Business</label>
+<select
+  id="businessSelect"
+  required
+  value={selectedBusiness}
+  onChange={(e) => setSelectedBusiness(e.target.value)}
+  className="select select-bordered w-full"
+  aria-label="Business" // ✅ add this for screen readers as extra fallback
+>
+  <option value="">Select Business</option>
+  {businesses.map((b) => (
+    <option key={b.id} value={b.id}>{b.name}</option>
+  ))}
+</select>
 
-  <label htmlFor="brandSelect" className="sr-only">Select Brand</label>
-  <select
-    id="brandSelect"
-    required
-    value={selectedBrand}
-    onChange={(e) => setSelectedBrand(e.target.value)}
-    className="select select-bordered w-full"
-  >
-    <option value="">Select Brand</option>
-    {brands.map((b) => (
-      <option key={b.id} value={b.id}>{b.name}</option>
-    ))}
-  </select>
+<label htmlFor="brandSelect" className="sr-only">Brand</label>
+<select
+  id="brandSelect"
+  required
+  value={selectedBrand}
+  onChange={(e) => setSelectedBrand(e.target.value)}
+  className="select select-bordered w-full"
+  aria-label="Brand" // ✅ add this for screen readers as extra fallback
+>
+  <option value="">Select Brand</option>
+  {brands.map((b) => (
+    <option key={b.id} value={b.id}>{b.name}</option>
+  ))}
+</select>
 
-  <button type="submit" className="btn btn-primary w-full">
-    Add Product
-  </button>
-</form>
 
+        <button type="submit" className="btn btn-primary w-full">
+          Add Product
+        </button>
+      </form>
 
       {/* Edit Product Form */}
       {editingProduct && (
         <div className="mb-6 p-4 border border-primary rounded">
           <h2 className="text-lg font-bold mb-2">Edit Product</h2>
           <form onSubmit={handleUpdate} className="space-y-2">
-            <input
-              type="text"
-              className="input input-bordered w-full"
-              value={editingProduct.name}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, name: e.target.value })
-              }
-              required
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              className="input input-bordered w-full"
-              value={editingProduct.price}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, price: e.target.value })
-              }
-              required
-            />
-            <textarea
-              className="textarea textarea-bordered w-full"
-              value={editingProduct.description}
-              onChange={(e) =>
-                setEditingProduct({
-                  ...editingProduct,
-                  description: e.target.value,
-                })
-              }
-            />
+            <label htmlFor="editName" className="sr-only">Edit Product Name</label>
+<input
+  id="editName"
+  type="text"
+  className="input input-bordered w-full"
+  value={editingProduct.name}
+  onChange={(e) =>
+    setEditingProduct({ ...editingProduct, name: e.target.value })
+  }
+  required
+  aria-label="Edit Product Name"
+/>
+
+<label htmlFor="editPrice" className="sr-only">Edit Product Price</label>
+<input
+  id="editPrice"
+  type="number"
+  placeholder="Price"
+  className="input input-bordered w-full"
+  value={editingProduct.price}
+  onChange={(e) =>
+    setEditingProduct({
+      ...editingProduct,
+      price: Number(e.target.value),
+    })
+  }
+  required
+  aria-label="Edit Product Price"
+/>
+
+<label htmlFor="editDescription" className="sr-only">Edit Product Description</label>
+<textarea
+  id="editDescription"
+  className="textarea textarea-bordered w-full"
+  value={editingProduct.description}
+  onChange={(e) =>
+    setEditingProduct({
+      ...editingProduct,
+      description: e.target.value,
+    })
+  }
+  aria-label="Edit Product Description"
+/>
+
             <button type="submit" className="btn btn-primary w-full">
               Update Product
             </button>
