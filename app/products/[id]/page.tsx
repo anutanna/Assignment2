@@ -4,13 +4,11 @@ import { ObjectId } from "mongodb";
 import BuyNowButton from "./BuyNowButton";
 import Image from "next/image";
 
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
   let objectId: ObjectId;
 
