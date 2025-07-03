@@ -2,7 +2,17 @@
 import { useState, useEffect } from "react";
 
 export default function ProductManagement() {
-  
+
+    interface Business {
+  id: string;
+  name: string;
+}
+
+interface Brand {
+  id: string;
+  name: string;
+}
+
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -12,8 +22,8 @@ export default function ProductManagement() {
   
   const [selectedBusiness, setSelectedBusiness] = useState("");
 const [selectedBrand, setSelectedBrand] = useState("");
-const [businesses, setBusinesses] = useState([]);
-const [brands, setBrands] = useState([]);
+const [businesses, setBusinesses] = useState<Business[]>([]);
+const [brands, setBrands] = useState<Brand[]>([]);
 const [stock, setStock] = useState(0);
 interface Product {
     id: string;
@@ -21,8 +31,9 @@ interface Product {
     price: number;
     description?: string;
     stock: number;
-    // Add other fields you use here
   }
+
+
   
 useEffect(() => {
     fetchProducts();
@@ -30,27 +41,25 @@ useEffect(() => {
     fetchBrands();
   }, []);
   
-  const fetchBusinesses = async () => {
-    const res = await fetch("/api/businesses");
-    const data = await res.json();
-    setBusinesses(data);
-  };
-  
-  const fetchBrands = async () => {
-    const res = await fetch("/api/brands");
-    const data = await res.json();
-    setBrands(data);
-  };
+ const fetchBusinesses = async () => {
+  const res = await fetch("/api/businesses");
+  const data = await res.json();
+  setBusinesses(data as Business[]);
+};
+
+const fetchBrands = async () => {
+  const res = await fetch("/api/brands");
+  const data = await res.json();
+  setBrands(data as Brand[]);
+};
+
 
   const fetchProducts = async () => {
     const res = await fetch("/api/products");
     const data = await res.json();
-    setProducts(data);
+    setProducts(data as Product[]);
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +98,7 @@ useEffect(() => {
     }
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: Product) => {
     setEditingProduct(product);
   };
 
@@ -119,8 +128,10 @@ useEffect(() => {
       <h1 className="text-2xl font-bold mb-4">Product Management</h1>
 
       {/* Add Product Form */}
-      <form onSubmit={handleAdd} className="mb-6 space-y-2">
+<form onSubmit={handleAdd} className="mb-6 space-y-2">
+  <label htmlFor="productName" className="sr-only">Product Name</label>
   <input
+    id="productName"
     type="text"
     placeholder="Product Name"
     className="input input-bordered w-full"
@@ -128,7 +139,10 @@ useEffect(() => {
     onChange={(e) => setName(e.target.value)}
     required
   />
+
+  <label htmlFor="productPrice" className="sr-only">Product Price</label>
   <input
+    id="productPrice"
     type="number"
     placeholder="Price"
     className="input input-bordered w-full"
@@ -136,23 +150,30 @@ useEffect(() => {
     onChange={(e) => setPrice(e.target.value)}
     required
   />
+
+  <label htmlFor="productDescription" className="sr-only">Product Description</label>
   <textarea
+    id="productDescription"
     placeholder="Description"
     className="textarea textarea-bordered w-full"
     value={description}
     onChange={(e) => setDescription(e.target.value)}
   />
 
-<input
-  type="number"
-  placeholder="Stock quantity"
-  className="input input-bordered w-full"
-  value={stock}
-  onChange={(e) => setStock(Number(e.target.value))}
-  required
-/>
+  <label htmlFor="productStock" className="sr-only">Stock quantity</label>
+  <input
+    id="productStock"
+    type="number"
+    placeholder="Stock quantity"
+    className="input input-bordered w-full"
+    value={stock}
+    onChange={(e) => setStock(Number(e.target.value))}
+    required
+  />
 
+  <label htmlFor="businessSelect" className="sr-only">Select Business</label>
   <select
+    id="businessSelect"
     required
     value={selectedBusiness}
     onChange={(e) => setSelectedBusiness(e.target.value)}
@@ -164,7 +185,9 @@ useEffect(() => {
     ))}
   </select>
 
+  <label htmlFor="brandSelect" className="sr-only">Select Brand</label>
   <select
+    id="brandSelect"
     required
     value={selectedBrand}
     onChange={(e) => setSelectedBrand(e.target.value)}
@@ -198,6 +221,7 @@ useEffect(() => {
             />
             <input
               type="number"
+              placeholder="Price"
               className="input input-bordered w-full"
               value={editingProduct.price}
               onChange={(e) =>

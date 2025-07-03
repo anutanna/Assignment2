@@ -22,9 +22,10 @@ export default function RegisterPage() {
       } else {
         setMessage(data.error || "Registration failed");
       }
-    } catch (error) {
+    } catch {
       setMessage("An error occurred");
     }
+
   };
 
   return (

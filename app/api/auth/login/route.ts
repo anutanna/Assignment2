@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
 
     // 🔥 Set JWT in secure HTTP-only cookie
-    cookies().set("token", token, {
+    (await cookies()).set("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

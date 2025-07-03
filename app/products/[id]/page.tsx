@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ObjectId } from "mongodb";
 import BuyNowButton from "./BuyNowButton";
+import Image from "next/image";
+
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -9,7 +11,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
   try {
     objectId = new ObjectId(id);
-  } catch (error) {
+  } catch {
     console.error("Invalid ObjectId format:", id);
     return notFound();
   }
@@ -29,7 +31,14 @@ export default async function ProductPage({ params }: { params: { id: string } }
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-      <img src={product.imageUrl || "/placeholder.png"} alt={product.name} className="w-64 mb-4" />
+      <Image
+        src={product.imageUrl || "/placeholder.png"}
+        alt={product.name}
+        width={256} // or your preferred width in pixels
+        height={256} // or appropriate height
+        className="w-64 mb-4"
+      />
+
       <p className="font-semibold">Price: ${product.price.toFixed(2)}</p>
       <p>{product.description}</p>
       <BuyNowButton productId={product.id} businessId={product.businessId} />
