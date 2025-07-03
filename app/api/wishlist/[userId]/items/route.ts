@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // POST: Add to wishlist
-export async function POST(req: NextRequest, { params }: { params: { userId: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function POST(req: NextRequest, context: any) {
+  const { params } = context as { params: { userId: string } };
   try {
     const body = await req.json();
     const { productId } = body;
@@ -33,7 +35,9 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
 }
 
 // GET: View wishlist
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(req: NextRequest, context: any) {
+  const { params } = context as { params: { userId: string } };
   try {
     const wishlist = await prisma.wishlistItem.findMany({
       where: { userId: params.userId },
@@ -44,7 +48,11 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     return NextResponse.json({ error: "Failed to fetch wishlist" }, { status: 500 });
   }
 }
-export async function DELETE(req: NextRequest, { params }: { params: { userId: string; productId: string } }) {
+
+// DELETE: Remove from wishlist
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function DELETE(req: NextRequest, context: any) {
+  const { params } = context as { params: { userId: string; productId: string } };
   try {
     await prisma.wishlistItem.delete({
       where: {
