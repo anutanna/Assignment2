@@ -1,37 +1,75 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 // POST /api/orders
 export async function POST(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+
     const body = await req.json();
 
-    // Validate required fields
-    if (!body.userId || !body.items || !Array.isArray(body.items)) {
+    if (!body.items || !Array.isArray(body.items)) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
+    // 🟢 Fetch product prices
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: body.items.map((item: any) => item.productId) },
+      },
+      select: { id: true, price: true },
+    });
+
+    // 🟢 Calculate total
+    let total = 0;
+    for (const item of body.items) {
+      const product = products.find((p) => p.id === item.productId);
+      if (!product) {
+        return NextResponse.json({ error: `Product not found: ${item.productId}` }, { status: 400 });
+      }
+      total += product.price * item.quantity;
+    }
+
+    // 🟢 Create order with total
     const createdOrder = await prisma.order.create({
       data: {
-        userId: body.userId,
+        user: { connect: { id: decoded.userId } },
+        business: { connect: { id: body.businessId } }, 
         shippingAddress: body.shippingAddress || "",
-        status: "Pending",
+        status: "PENDING",
+        total,
         orderItems: {
-          create: body.items.map((item: { productId: string; quantity: number }) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-        },
+          create: body.items.map((item: any) => {
+            const product = products.find((p) => p.id === item.productId);
+            return {
+              productId: item.productId,
+              quantity: item.quantity,
+              price: product?.price || 0, 
+            };
+          }),
+        },        
       },
       include: { orderItems: true },
     });
+    
+    
 
     return NextResponse.json(createdOrder, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("Failed to create order:", error);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 }
+
 
 // GET /api/orders?userId=xyz
 export async function GET(req: NextRequest) {
@@ -45,12 +83,16 @@ export async function GET(req: NextRequest) {
 
     const orders = await prisma.order.findMany({
       where: { userId },
-      include: { orderItems: true },
+      include: {
+        orderItems: true,
+        user: { select: { name: true, avatar: true } }, 
+      },
     });
+    
 
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Failed to fetch orders:", error);
     return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
   }
 }
@@ -73,7 +115,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(updatedOrder, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Failed to update order:", error);
     return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
   }
 }

@@ -25,6 +25,10 @@ export default function Header() {
             🛍️ <span className={styles.cartCount}>0</span>
           </span>
         </Link>
+        <Link href="/dashboard/products" className={styles.icon}>
+  <span>🛠️ Dashboard</span>
+</Link>
+
       </div>
     </header>
   );

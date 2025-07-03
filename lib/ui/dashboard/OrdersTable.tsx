@@ -83,22 +83,23 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                   <div className="avatar">
                     <div className="mask mask-circle w-8 h-8">
                       <Image
-                        src={order.customer.avatar}
-                        alt={order.customer.name}
+                        src={order.user?.avatar || "/placeholder.png"}
+                        alt={order.user?.name || "Customer"}
                         width={32}
                         height={32}
                         className="rounded-full"
                       />
                     </div>
                   </div>
-                  <div className="font-bold text-base-content">{order.customer.name}</div>
+                  <div className="font-bold text-base-content">{order.user?.name || "N/A"}</div>
                 </div>
               </td>
 
               {/* Amount Column */}
               <td>
                 <span className="font-bold text-base-content">
-                  ${order.amount.toFixed(2)}
+                ${(order.total ?? 0).toFixed(2)}
+
                 </span>
               </td>
 

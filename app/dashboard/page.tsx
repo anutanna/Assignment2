@@ -8,44 +8,41 @@ import MiniHero from '@/lib/ui/dashboard/MiniHero';
 import VendorHeader from '@/lib/ui/dashboard/VendorHeader';
 import PerformanceCard from '@/lib/ui/dashboard/PerformanceCard';
 import OrdersTable from '@/lib/ui/dashboard/OrdersTable';
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
   // Performance summary: keep mock data for demo
   const performanceData = [
-    {
-      title: 'Revenue',
-      value: '$12,426',
-      change: 3.5,
-      icon: <FaDollarSign size={20} />,
-    },
-    {
-      title: 'Refunds',
-      value: '$892',
-      change: -1.2,
-      icon: <FaUndo size={20} />,
-      inverted: true,
-    },
-    {
-      title: 'Orders',
-      value: '1,247',
-      change: 8.3,
-      icon: <FaShoppingCart size={20} />,
-    },
-    {
-      title: 'Basket Size',
-      value: '$53.40',
-      change: 2.1,
-      icon: <FaShoppingBasket size={20} />,
-    },
+    { title: 'Revenue', value: '$12,426', change: 3.5, icon: <FaDollarSign size={20} /> },
+    { title: 'Refunds', value: '$892', change: -1.2, icon: <FaUndo size={20} />, inverted: true },
+    { title: 'Orders', value: '1,247', change: 8.3, icon: <FaShoppingCart size={20} /> },
+    { title: 'Basket Size', value: '$53.40', change: 2.1, icon: <FaShoppingBasket size={20} /> },
   ];
 
-  // Fetch real orders from your API
-  const userId = 'PUT_REAL_USER_ID_HERE'; // replace this with a real userId
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/orders?userId=${userId}`,
-    { cache: 'no-store' }
+  // Fetch current logged-in user info using your /api/auth/me endpoint:
+  const meRes = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/me`,
+    {
+      headers: { cookie: cookies().toString() },
+      cache: "no-store",
+    }
   );
-  const ordersData = await res.json();
+
+  if (!meRes.ok) {
+    // User is not logged in; redirect to login page
+    redirect("/login");
+  }
+
+  const currentUserData = await meRes.json();
+  const userId = currentUserData.user.id;  // Get real user ID
+
+  // Fetch real orders for the logged-in user
+  const ordersRes = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/orders?userId=${userId}`,
+    { cache: "no-store" }
+  );
+  const ordersData = await ordersRes.json();
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -68,9 +65,7 @@ export default async function Dashboard() {
         {/* Performance Summary Section */}
         <div className="mb-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-base-content mb-4">
-              Performance Summary
-            </h2>
+            <h2 className="text-2xl font-bold text-base-content mb-4">Performance Summary</h2>
             <div className="divider"></div>
           </div>
 
@@ -91,9 +86,7 @@ export default async function Dashboard() {
         {/* Orders Section */}
         <div>
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-base-content mb-4">
-              Orders
-            </h2>
+            <h2 className="text-2xl font-bold text-base-content mb-4">Orders</h2>
             <div className="divider"></div>
           </div>
 
