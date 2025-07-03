@@ -1,10 +1,16 @@
-// DO NOT include "use client" at the top
 import styles from "./LatestProductsSection.module.css";
 import ProductCard from "@/lib/ui/components/productCard";
 import { prisma } from "@/lib/prisma";
 
 export default async function LatestProductsSection() {
-  const products = await prisma.product.findMany();
+  const products = await prisma.product.findMany({
+    include: {
+      images: {
+        select: { url: true },
+        take: 1,
+      },
+    },
+  });
 
   return (
     <section className={styles.latestProducts}>
@@ -14,10 +20,11 @@ export default async function LatestProductsSection() {
           <ProductCard
             key={product.id}
             name={product.name}
-            image={product.imageUrl}
-            price={`$${product.price}`}
+            image={product.images?.[0]?.url ?? "/placeholder.png"}
+            price={product.price} 
             id={product.id}
           />
+
         ))}
       </div>
     </section>
