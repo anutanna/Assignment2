@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ObjectId } from "mongodb";
 
 // DELETE /api/products/:id
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export async function DELETE(req: NextRequest, context: any) {
   const { params } = context as { params: { id: string } };
   try {
@@ -22,7 +22,6 @@ export async function DELETE(req: NextRequest, context: any) {
 }
 
 // PUT /api/products/:id
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PUT(req: NextRequest, context: any) {
   const { params } = context as { params: { id: string } };
   try {

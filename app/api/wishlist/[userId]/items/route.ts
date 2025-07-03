@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // POST: Add to wishlist
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function POST(req: NextRequest, context: any) {
   const { params } = context as { params: { userId: string } };
   try {
@@ -35,7 +34,6 @@ export async function POST(req: NextRequest, context: any) {
 }
 
 // GET: View wishlist
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function GET(req: NextRequest, context: any) {
   const { params } = context as { params: { userId: string } };
   try {
@@ -50,7 +48,6 @@ export async function GET(req: NextRequest, context: any) {
 }
 
 // DELETE: Remove from wishlist
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function DELETE(req: NextRequest, context: any) {
   const { params } = context as { params: { userId: string; productId: string } };
   try {
