@@ -14,8 +14,19 @@ export async function POST(req: NextRequest) {
 
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    interface OrderItem {
+      productId: string;
+      quantity: number;
+    }
+    interface OrderRequestBody {
+      items: OrderItem[];
+      shippingAddress?: string;
+      businessId: string;
+    }
+    
 
-    const body = await req.json();
+    const body: OrderRequestBody = await req.json();
+
 
     if (!body.items || !Array.isArray(body.items)) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });

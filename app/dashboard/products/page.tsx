@@ -2,18 +2,28 @@
 import { useState, useEffect } from "react";
 
 export default function ProductManagement() {
-  const [products, setProducts] = useState([]);
+  
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
-  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  
   const [selectedBusiness, setSelectedBusiness] = useState("");
 const [selectedBrand, setSelectedBrand] = useState("");
 const [businesses, setBusinesses] = useState([]);
 const [brands, setBrands] = useState([]);
 const [stock, setStock] = useState(0);
-
+interface Product {
+    id: string;
+    name: string;
+    price: number;
+    description?: string;
+    stock: number;
+    // Add other fields you use here
+  }
+  
 useEffect(() => {
     fetchProducts();
     fetchBusinesses();

@@ -30,6 +30,7 @@ export default function BuyNowButton({ productId, businessId }: { productId: str
             alert("Failed to place order: " + data.error);
           }
         } catch (error) {
+            console.error("Error:", error);
           alert("An error occurred placing the order.");
         }
       }}

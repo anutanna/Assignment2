@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }

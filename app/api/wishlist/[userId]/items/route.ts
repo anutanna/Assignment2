@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Failed to add to wishlist" }, { status: 500 });
   }
 }
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     });
     return NextResponse.json(wishlist, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Failed to fetch wishlist" }, { status: 500 });
   }
 }
@@ -56,7 +56,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { userId: s
     });
     return NextResponse.json({ message: "Removed from wishlist" }, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Failed to remove from wishlist" }, { status: 500 });
   }
 }

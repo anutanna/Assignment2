@@ -8,7 +8,8 @@ export async function GET(req: Request) {
     const category = searchParams.get("category");
     const search = searchParams.get("search");
 
-    let where: any = {};
+    const where: Record<string, unknown> = {};
+
 
     if (category) {
       where.categories = {
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }
