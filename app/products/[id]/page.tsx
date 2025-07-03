@@ -4,12 +4,10 @@ import { ObjectId } from "mongodb";
 import BuyNowButton from "./BuyNowButton";
 import Image from "next/image";
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
+export default async function ProductPage(
+  props: { params: { id: string } }
+) {
+  const { id } = props.params;
   let objectId: ObjectId;
 
   try {
@@ -48,10 +46,8 @@ export default async function ProductPage({
         height={256}
         className="w-64 mb-4 object-cover"
       />
-
       <p className="font-semibold">Price: ${product.price.toFixed(2)}</p>
       <p className="mb-4">{product.description}</p>
-
       <BuyNowButton productId={product.id} businessId={product.businessId} />
     </main>
   );
