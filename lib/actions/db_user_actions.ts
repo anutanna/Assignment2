@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma as db } from "@/lib/db/prisma";
+import { prisma as db } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 
 

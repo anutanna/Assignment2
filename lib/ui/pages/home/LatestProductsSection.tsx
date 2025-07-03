@@ -1,7 +1,7 @@
 // DO NOT include "use client" at the top
 import styles from "./LatestProductsSection.module.css";
 import ProductCard from "@/lib/ui/components/productCard";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/prisma";
 
 export default async function LatestProductsSection() {
   const products = await prisma.product.findMany();

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/prisma";
 import { ObjectId } from "mongodb";
 import BuyNowButton from "./BuyNowButton";
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/prisma";
 
 // POST: Add to wishlist
 export async function POST(req: NextRequest, { params }: { params: { userId: string } }) {
