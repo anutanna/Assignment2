@@ -1,3 +1,4 @@
+// app/products/[id]/ProductPageContent.tsx
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ObjectId } from "mongodb";
