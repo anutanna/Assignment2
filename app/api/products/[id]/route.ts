@@ -34,7 +34,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 
 // PUT /api/products/:id
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+  const { params } = context;
   try {
     const body = await req.json();
     const updated = await prisma.product.update({
@@ -51,3 +52,4 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
+
