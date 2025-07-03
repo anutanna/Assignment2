@@ -5,11 +5,10 @@ import BuyNowButton from "./BuyNowButton";
 import Image from "next/image";
 
 export default async function ProductPage({
-  params,
+  params: { id },
 }: {
-  params: Record<string, string>;
+  params: { id: string };
 }) {
-  const { id } = params;
   let objectId: ObjectId;
 
   try {
