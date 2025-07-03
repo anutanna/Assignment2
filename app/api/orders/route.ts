@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
     // 🟢 Fetch product prices
     const products = await prisma.product.findMany({
       where: {
-        id: { in: body.items.map((item: any) => item.productId) },
+        id: { in: body.items.map((item) => item.productId) },
+
       },
       select: { id: true, price: true },
     });
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
         status: "PENDING",
         total,
         orderItems: {
-          create: body.items.map((item: any) => {
+          create: body.items.map((item) => {
             const product = products.find((p) => p.id === item.productId);
             return {
               productId: item.productId,

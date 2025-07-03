@@ -243,7 +243,7 @@ useEffect(() => {
             </tr>
           </thead>
           <tbody>
-            {products.map((p: any) => (
+            {products.map((p) => (
               <tr key={p.id}>
                 <td>{p.name}</td>
                 <td>{p.price}</td>
