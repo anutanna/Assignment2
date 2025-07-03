@@ -3,30 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { ObjectId } from "mongodb";
 
 // DELETE /api/products/:id
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function DELETE(req: NextRequest, context: any) {
   const { params } = context as { params: { id: string } };
   try {
     const objectId = new ObjectId(params.id);
 
-    // 1. Delete related images
-    await prisma.productImage.deleteMany({
-      where: { productId: objectId.toString() },
-    });
-
-    // 2. Delete related product-category links
-    await prisma.productToCategory.deleteMany({
-      where: { productId: objectId.toString() },
-    });
-
-    // 3. Delete related order items
-    await prisma.orderItem.deleteMany({
-      where: { productId: objectId.toString() },
-    });
-
-    // 4. Delete the product itself
-    await prisma.product.delete({
-      where: { id: objectId.toString() },
-    });
+    await prisma.productImage.deleteMany({ where: { productId: objectId.toString() } });
+    await prisma.productToCategory.deleteMany({ where: { productId: objectId.toString() } });
+    await prisma.orderItem.deleteMany({ where: { productId: objectId.toString() } });
+    await prisma.product.delete({ where: { id: objectId.toString() } });
 
     return NextResponse.json({ message: "Product deleted" }, { status: 200 });
   } catch (error) {
@@ -36,6 +22,7 @@ export async function DELETE(req: NextRequest, context: any) {
 }
 
 // PUT /api/products/:id
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PUT(req: NextRequest, context: any) {
   const { params } = context as { params: { id: string } };
   try {

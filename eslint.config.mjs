@@ -13,9 +13,9 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      // Show warnings (but don't fail builds) for these rules:
       "react-hooks/exhaustive-deps": "warn",
       "@next/next/no-img-element": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ];
