@@ -4,7 +4,6 @@ import { ObjectId } from "mongodb";
 import BuyNowButton from "./BuyNowButton";
 import Image from "next/image";
 
-
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const { id } = params;
   let objectId: ObjectId;
@@ -23,27 +22,33 @@ export default async function ProductPage({ params }: { params: { id: string } }
       name: true,
       description: true,
       price: true,
-      businessId: true, 
+      businessId: true,
+      images: {
+        select: { url: true },
+        take: 1,
+      },
     },
   });
-    if (!product) return notFound();
+
+  if (!product) return notFound();
+
+  const imageUrl = product.images?.[0]?.url || "/placeholder.png";
 
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
       <Image
-        src={product.imageUrl || "/placeholder.png"}
+        src={imageUrl}
         alt={product.name}
-        width={256} // or your preferred width in pixels
-        height={256} // or appropriate height
-        className="w-64 mb-4"
+        width={256}
+        height={256}
+        className="w-64 mb-4 object-cover"
       />
 
       <p className="font-semibold">Price: ${product.price.toFixed(2)}</p>
-      <p>{product.description}</p>
+      <p className="mb-4">{product.description}</p>
+
       <BuyNowButton productId={product.id} businessId={product.businessId} />
-
-
     </main>
   );
 }
