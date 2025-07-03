@@ -7,7 +7,7 @@ import Image from "next/image";
 export default async function ProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Record<string, string>;
 }) {
   const { id } = params;
   let objectId: ObjectId;
