@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/db/prisma';
 
+interface JwtPayload {
+  userId: string;
+}
+
+interface AddToCartBody {
+  productId: string;
+  quantity: number;
+}
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
@@ -10,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     const userId = decoded.userId;
 
     const cartItems = await prisma.cartItem.findMany({
@@ -19,9 +28,9 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(cartItems);
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-  }
+  } catch {
+  return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+}
 }
 
 export async function POST(req: NextRequest) {
@@ -31,21 +40,21 @@ export async function POST(req: NextRequest) {
   }
 
   const token = authHeader.split(' ')[1];
-  let decoded: any;
+  let decoded: JwtPayload;
   try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
   } catch {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 
   const userId = decoded.userId;
-  const { productId, quantity } = await req.json();
+  const body = (await req.json()) as AddToCartBody;
+  const { productId, quantity } = body;
 
   if (!productId || !quantity) {
     return NextResponse.json({ error: 'Missing productId or quantity' }, { status: 400 });
   }
 
-  // Either create or update existing cart item
   const existing = await prisma.cartItem.findFirst({
     where: { userId, productId },
   });

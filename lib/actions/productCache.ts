@@ -14,7 +14,7 @@ export async function getCachedProducts() {
     return cached;
   }
 
-  const products = await db.product.findMany({
+  const products = await prisma.product.findMany({
     include: {
       images: true,
     },
