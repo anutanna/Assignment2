@@ -1,16 +1,10 @@
+import { getProducts } from "@/lib/actions/db_product_actions";
 import styles from "./LatestProductsSection.module.css";
 import ProductCard from "@/lib/ui/components/productCard";
-import { prisma } from "@/lib/prisma";
 
 export default async function LatestProductsSection() {
-  const products = await prisma.product.findMany({
-    include: {
-      images: {
-        select: { url: true },
-        take: 1,
-      },
-    },
-  });
+
+  const products = await getProducts();
 
   return (
     <section className={styles.latestProducts}>
@@ -20,11 +14,10 @@ export default async function LatestProductsSection() {
           <ProductCard
             key={product.id}
             name={product.name}
-            image={product.images?.[0]?.url ?? "/placeholder.png"}
-            price={product.price} 
+            image={product.images?.[0]?.url || "/placeholder.jpg"}
+            price={`${product.price}`}
             id={product.id}
           />
-
         ))}
       </div>
     </section>

@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { inter } from "@/lib/fonts";
-import type { Viewport } from "next";
+import Header from "@/lib/ui/header/Header";
+import Footer from "@/lib/ui/footer/Footer";
+import { CartProvider } from '@/lib/ui/context/CartContext';
 
 export const metadata: Metadata = {
   title: "Shopizon",
@@ -17,16 +19,22 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" data-theme="light">
-      <body>
-        <main className={`container mx-auto p-4 ${inter.className} antialiased`}>
-          {children}
-        </main>
+      <body className={`${inter.className} antialiased`}>
+        <CartProvider>
+          <Header />
+          <main className="container mx-auto p-4">
+            {children}
+          </main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
 }
+
+
