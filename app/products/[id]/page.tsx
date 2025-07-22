@@ -2,10 +2,41 @@ import { prisma } from '@/lib/db/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import AddToCartSection from '@/lib/ui/components/AddToCartSection';
+import { type Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: { id: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await prisma.product.findUnique({
+    where: { id: params.id },
+    include: { images: true },
+  });
+
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+      description: 'This product does not exist.',
+    };
+  }
+
+  return {
+    title: product.name,
+    description: product.description || 'Find amazing products on Shopizon.',
+    openGraph: {
+      images: [
+        {
+          url: product.images[0]?.url || '/placeholder.png',
+          width: 800,
+          height: 600,
+          alt: product.name,
+        },
+      ],
+    },
+  };
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -33,9 +64,12 @@ export default async function ProductPage({ params }: Props) {
 
         <div className="w-full md:w-1/2 space-y-6">
           <h1 className="text-3xl font-bold">{product.name}</h1>
-          <p className="text-xl font-semibold text-gray-800">${product.price.toFixed(2)}</p>
-          <p className="text-gray-700">{product.description || 'No description provided.'}</p>
-
+          <p className="text-xl font-semibold text-gray-800">
+            ${product.price.toFixed(2)}
+          </p>
+          <p className="text-gray-700">
+            {product.description || 'No description provided.'}
+          </p>
           <AddToCartSection productId={product.id} />
         </div>
       </div>
@@ -47,8 +81,7 @@ export default async function ProductPage({ params }: Props) {
             ? product.description.split('. ').map((line, idx) => (
                 <li key={idx}>{line.trim()}</li>
               ))
-            : <li>No additional details available.</li>
-          }
+            : <li>No additional details available.</li>}
         </ul>
       </div>
     </div>
