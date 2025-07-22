@@ -2,9 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+interface CartItem {
+  quantity: number;
+  productId: string;
+}
+
 interface CartContextType {
   cartCount: number;
-  fetchCartItems: () => void; // 🔁 renamed from refreshCart
+  fetchCartItems: () => void;
 }
 
 const CartContext = createContext<CartContextType>({
@@ -25,12 +30,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await fetch('/api/cart', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data: CartItem[] = await res.json();
       if (res.ok) {
-        const totalItems = data.reduce(
-          (sum: number, item: any) => sum + item.quantity,
-          0
-        );
+        const totalItems = data.reduce((sum, item) => sum + item.quantity, 0);
         setCartCount(totalItems);
       }
     } catch (err) {

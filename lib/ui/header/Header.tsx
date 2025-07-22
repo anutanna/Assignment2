@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from './Header.module.css';
 import { Input } from '@/lib/ui/components/input';
 import { useCart } from '@/lib/ui/context/CartContext';
-
+import Image from 'next/image';
 interface Product {
   id: string;
   name: string;
@@ -86,7 +86,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
-        <img src="/logo.svg" alt="Shopizon" />
+        <Image src="/logo.svg" alt="Shopizon" width={100} height={40} />
       </div>
 
       <form className={styles.searchWrapper} onSubmit={handleSubmit}>

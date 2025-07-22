@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { FaShoppingCart, FaTrash, FaCreditCard } from 'react-icons/fa';
 import MiniHero from '@/lib/ui/dashboard/MiniHero';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 
 interface CartItem {
   id: string;
@@ -18,6 +20,7 @@ interface CartItem {
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -52,7 +55,9 @@ export default function CartPage() {
   
 
   const handleQuantityChange = async (id: string, delta: number) => {
-    const newQuantity = Math.max(1, cartItems.find(item => item.id === id)?.quantity! + delta);
+    const existing = cartItems.find(item => item.id === id);
+const newQuantity = Math.max(1, (existing?.quantity ?? 0) + delta);
+
   
     setCartItems(prev =>
       prev.map(item =>
@@ -173,11 +178,13 @@ export default function CartPage() {
                       </div>
 
                       <button
-                        className="text-red-500"
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        <FaTrash size={16} />
-                      </button>
+  className="text-red-500"
+  onClick={() => handleRemoveItem(item.id)}
+  aria-label="Remove item"
+>
+  <FaTrash size={16} />
+</button>
+
                     </div>
                   </div>
                 ))}
