@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "postinstall": "prisma generate",
-    "start": "next start",
-    "lint": "next lint"
-  },
+  "dev": "next dev",
+  "build": "TAILWIND_DISABLE_OXIDE=1 next build",
+  "postinstall": "prisma generate",
+  "start": "next start",
+  "lint": "next lint"
+},
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
