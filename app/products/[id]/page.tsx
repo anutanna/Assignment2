@@ -10,7 +10,17 @@ interface Props {
   params: { id: string };
 }
 
+// ✅ Check if running on Vercel (build) to skip DB query
+const isBuildTime = process.env.VERCEL === '1';
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  if (isBuildTime) {
+    return {
+      title: 'Shopizon Product',
+      description: 'Static product placeholder during build',
+    };
+  }
+
   const product = await prisma.product.findUnique({
     where: { id: params.id },
     include: { images: true },
@@ -40,6 +50,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
+  if (isBuildTime) {
+    // ✅ Show static placeholder page during Vercel build
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-screen-lg">
+        <h1 className="text-3xl font-bold">Product Placeholder</h1>
+        <p>Data not available during build (Prisma disabled).</p>
+      </div>
+    );
+  }
+
   const product = await prisma.product.findUnique({
     where: { id: params.id },
     include: { images: true },
@@ -72,17 +92,6 @@ export default async function ProductPage({ params }: Props) {
           </p>
           <AddToCartSection productId={product.id} />
         </div>
-      </div>
-
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold mb-4">Product Description</h2>
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          {product.description
-            ? product.description.split('. ').map((line, idx) => (
-                <li key={idx}>{line.trim()}</li>
-              ))
-            : <li>No additional details available.</li>}
-        </ul>
       </div>
     </div>
   );
