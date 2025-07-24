@@ -2,26 +2,18 @@ import { getProducts } from "@/lib/actions/db_product_actions";
 import styles from "./LatestProductsSection.module.css";
 import ProductCard from "@/lib/ui/components/productCard";
 
-const isBuildTime = process.env.VERCEL === "1";
+export const dynamic = "force-dynamic"; // ✅ Disable static optimization
+export const revalidate = 0; // ✅ Disable ISR (optional)
 
 export default async function LatestProductsSection() {
-  let products: any[] = [];
-
-  if (!isBuildTime) {
-    products = await getProducts();
-  }
+  const products = await getProducts();
 
   return (
     <section className={styles.latestProducts}>
       <h3 className={styles.heading}>Latest Products</h3>
-
-      {isBuildTime ? (
-        <p style={{ color: "#777", padding: "10px" }}>
-          Products will load dynamically at runtime.
-        </p>
-      ) : (
-        <div className={styles.grid}>
-          {products.map((product) => (
+      <div className={styles.grid}>
+        {products.length > 0 ? (
+          products.map((product) => (
             <ProductCard
               key={product.id}
               name={product.name}
@@ -29,9 +21,13 @@ export default async function LatestProductsSection() {
               price={`${product.price}`}
               id={product.id}
             />
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <p style={{ color: "#777", padding: "10px" }}>
+            No products available.
+          </p>
+        )}
+      </div>
     </section>
   );
 }
